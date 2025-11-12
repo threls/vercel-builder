@@ -1,6 +1,6 @@
 import path from 'path'
 
-import { createLambda, BuildOptions, download, File, FileBlob, FileFsRef, glob, getNodeVersion, getSpawnOptions, Lambda, runNpmInstall, runPackageJsonScript } from '@vercel/build-utils'
+import { createLambda, BuildOptions, download, File, FileBlob, FileFsRef, glob, getNodeVersion, cloneEnv, Lambda, runNpmInstall, runPackageJsonScript } from '@vercel/build-utils'
 import type { Route } from '@vercel/routing-utils'
 import consola from 'consola'
 import fs from 'fs-extra'
@@ -64,7 +64,9 @@ export async function build (opts: BuildOptions & { config: NuxtBuilderConfig })
 
   // Node version
   const nodeVersion = await getNodeVersion(entrypointPath, undefined, {}, meta)
-  const spawnOpts = getSpawnOptions(meta, nodeVersion)
+  const spawnOpts = {
+    env: cloneEnv(process.env)
+  }
 
   // Prepare TypeScript environment if required.
   const usesTypescript = (pkg.devDependencies && Object.keys(pkg.devDependencies).includes('@nuxt/typescript-build')) || (pkg.dependencies && Object.keys(pkg.dependencies).includes('@nuxt/typescript'))
